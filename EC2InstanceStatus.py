@@ -1,6 +1,7 @@
 import boto3
 def lambda_handler(event, context):
    client=boto3.client('ec2')
+   sns_client=boto3.client('sns')
    response = client.describe_instances()
    for data in response.get('Reservations'):
         flag=False
@@ -14,6 +15,6 @@ def lambda_handler(event, context):
                    if str(env).lower()=='production':
                        InstanceId = data2['InstanceId']
                        print('Instance state is :', State, 'Environment :', env,'InstanceId :',InstanceId)
-
+                       sns_client.publish(TargetArn='arn:aws:sns:us-east-1:837726742550:ProdInstanceStopped',Message='Production instance stopped Instance ID :'+InstanceId)
 
 
